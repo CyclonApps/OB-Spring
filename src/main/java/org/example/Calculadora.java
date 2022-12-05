@@ -1,8 +1,8 @@
 package org.example;
 
-public class CalculatorService {
+public class Calculadora {
 
-    public CalculatorService() {
+    public Calculadora() {
         System.out.println("Ejecutando constructor CalculatorService");
     }
     public String holaMundo() {

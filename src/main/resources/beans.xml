@@ -4,8 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="calculatorService" class="org.example.CalculatorService">
-        <!-- collaborators and configuration for this bean go here -->
+    <bean id="calculadora" class="org.example.Calculadora">
     </bean>
 
+    <bean id="gestorFacturas" class="org.example.GestorFacturas">
+        <constructor-arg name="calculadora" value="calculadora" />
+        <constructor-arg name="nombre" value="Facturator 3000" />
+    </bean>
 </beans>
