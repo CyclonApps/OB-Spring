@@ -8,7 +8,7 @@ public class Main {
 
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
 
-        // EJEMPLO 1
+        // CONCEPTO 1: Cómo obtener beans de Spring
         // Opción 1. Crear un objeto de forma normal
         //Calculadora service = new Calculadora();
 
@@ -22,6 +22,13 @@ public class Main {
         texto = calculadora2.holaMundo();
         System.out.println(texto);
 
-        // EJEMPLO 2
+        // CONCEPTO 2: Cargar un bean dentro de otro bean
+        GestorFacturas gestor = (GestorFacturas) context.getBean("gestorFacturas");
+        System.out.println(gestor.calculadora.holaMundo());
+
+        // CONCEPTO 3: Scope o alcance
+        /* Los beans por defecto son singleton, se crea el objeto y se reutiliza para toda la aplicación
+        * podemos cambiarlo a scope="prototype" si queremos que se cree un nuevo objeto cada vez */
+        // Verificarlo viendo cómo se ejecuta varias veces un constructor
     }
 }
