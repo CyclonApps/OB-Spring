@@ -2,10 +2,9 @@ package com.example.obrestdatajap.controller;
 
 import com.example.obrestdatajap.entities.Book;
 import com.example.obrestdatajap.repository.BookRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +49,17 @@ public class BookController {
 
         // Opción 2
         // return bookOpt.orElse(null);
+
+        // return bookOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Crear un nuevo libro en base a datos
-
+    @PostMapping("/api/books")
+    public Book create(@RequestBody Book book, @RequestHeader HttpHeaders headers) {
+        System.out.println(headers.get("User-Agent"));
+        // Guardar el libro recibido por parámetro en la base de datos
+        return bookRepository.save(book);
+    }
 
     // Actualizar un libro existente en base de datos
 
