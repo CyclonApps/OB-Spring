@@ -2,7 +2,10 @@ package com.example.obrestdatajap.controller;
 
 import com.example.obrestdatajap.entities.Book;
 import com.example.obrestdatajap.repository.BookRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +14,8 @@ import java.util.Optional;
 
 @RestController
 public class BookController {
+
+    private final Logger log = LoggerFactory.getLogger(BookController.class);
 
     // Atributos
     private BookRepository bookRepository;
@@ -24,11 +29,11 @@ public class BookController {
 
     // CRUD sobre la entidad Book
 
-    // Buscar todos los libros (lista de libros)
+    // Buscar todos los libros que hay en base de datos (ArrayList de Libros)
     /**
      * http://localhost:8080/api/books
      * @return
-     * **/
+     */
     @GetMapping("/api/books")
     public List<Book> findAll() {
         // Recuperar i devolver los libros de base de datos
@@ -54,14 +59,39 @@ public class BookController {
     }
 
     // Crear un nuevo libro en base a datos
+    /**
+     * Método POST, no colisiona con findAll porque son diferentes métodos HTTP: GET vs. POST
+     * @param book
+     * @param headers
+     * @return
+     */
     @PostMapping("/api/books")
-    public Book create(@RequestBody Book book, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<Book> create(@RequestBody Book book, @RequestHeader HttpHeaders headers) {
         System.out.println(headers.get("User-Agent"));
         // Guardar el libro recibido por parámetro en la base de datos
-        return bookRepository.save(book);
+        if(book.getId() != null) { // quiere decir que existe el id y por tanto no es una creación
+            log.warn("Trying to create a book with id");
+            System.out.println("Trying to create a book with id");
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(bookRepository.save(book));
     }
 
-    // Actualizar un libro existente en base de datos
+    /**
+     * Actualizar un libro existente en base de datos
+     */
+    @PutMapping("/api/books")
+    public ResponseEntity<Book> update(@RequestBody Book book) {
+        Optional<Book> bookOpt = bookRepository.findById(book.getId());
+
+        // Opción 1
+        if (bookOpt.isPresent()) {
+            return ResponseEntity.ok(bookOpt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     // Borrar un libro en base de datos
 }
