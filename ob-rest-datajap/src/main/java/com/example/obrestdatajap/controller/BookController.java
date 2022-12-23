@@ -5,7 +5,6 @@ import com.example.obrestdatajap.repository.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,8 +57,8 @@ public class BookController {
         // return bookOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Crear un nuevo libro en base a datos
     /**
+     * Crear un nuevo libro en base a datos
      * Método POST, no colisiona con findAll porque son diferentes métodos HTTP: GET vs. POST
      * @param book
      * @param headers
@@ -82,16 +81,40 @@ public class BookController {
      * Actualizar un libro existente en base de datos
      */
     @PutMapping("/api/books")
-    public ResponseEntity<Book> update(@RequestBody Book book) {
-        Optional<Book> bookOpt = bookRepository.findById(book.getId());
+    public ResponseEntity<Object> update(@RequestBody Book book) {
+        if (book.getId() == null) { // si no tiene id quiere decir que si es una creacion
+            log.warn("Trying to update a non existent book");
+            return ResponseEntity.badRequest().build();
+        }
 
-        // Opción 1
-        if (bookOpt.isPresent()) {
-            return ResponseEntity.ok(bookOpt.get());
-        } else {
+        if (!bookRepository.existsById(book.getId())) {
+            log.warn("Trying to update a non existent book");
             return ResponseEntity.notFound().build();
         }
+
+        // El proceso de actualización
+        Book result = bookRepository.save(book);
+        return ResponseEntity.ok(result);
     }
 
     // Borrar un libro en base de datos
+    @DeleteMapping("/api/books/{id}")
+    public ResponseEntity<Book> delete(@PathVariable Long id) {
+
+        if (!bookRepository.existsById(id)) {
+            log.warn("Trying to delete a non existent book");
+            return ResponseEntity.notFound().build();
+        }
+
+        bookRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/api/books")
+    public ResponseEntity<Book> deleteAll() {
+        log.debug("REST Request for deleting all books");
+        bookRepository.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
 }
