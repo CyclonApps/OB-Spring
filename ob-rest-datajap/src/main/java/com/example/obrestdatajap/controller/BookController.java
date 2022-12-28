@@ -2,11 +2,14 @@ package com.example.obrestdatajap.controller;
 
 import com.example.obrestdatajap.entities.Book;
 import com.example.obrestdatajap.repository.BookRepository;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +26,6 @@ public class BookController {
     public BookController(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
-
-    //
 
     // CRUD sobre la entidad Book
 
@@ -99,7 +100,8 @@ public class BookController {
 
     // Borrar un libro en base de datos
     @DeleteMapping("/api/books/{id}")
-    public ResponseEntity<Book> delete(@PathVariable Long id) {
+    @ApiOperation("Buscar un libro por clave primaria id Long")
+    public ResponseEntity<Book> delete(@ApiParam("Clave primaria tipo Long") @PathVariable Long id) {
 
         if (!bookRepository.existsById(id)) {
             log.warn("Trying to delete a non existent book");
@@ -111,6 +113,7 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
+    @ApiIgnore // Ignorar este método para que no aparezca en la documentación de la api Swagger
     @DeleteMapping("/api/books")
     public ResponseEntity<Book> deleteAll() {
         log.debug("REST Request for deleting all books");
