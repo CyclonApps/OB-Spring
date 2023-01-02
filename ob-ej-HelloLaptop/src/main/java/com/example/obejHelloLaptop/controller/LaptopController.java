@@ -2,6 +2,7 @@ package com.example.obejHelloLaptop.controller;
 
 import com.example.obejHelloLaptop.entities.Laptop;
 import com.example.obejHelloLaptop.repositories.LaptopRepository;
+import io.swagger.annotations.Api;
 import jakarta.websocket.server.PathParam;
 import org.apache.coyote.Response;
 import org.springframework.http.RequestEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class LaptopController {
 
     public LaptopRepository laptopRepository;
@@ -30,12 +32,12 @@ public class LaptopController {
         return laptopRepository.save(laptop);
     } */
 
-    @GetMapping("/api/laptop")
+    @GetMapping("/laptop")
     public List<Laptop> findAll() {
         return laptopRepository.findAll();
     }
 
-    @GetMapping("/api/laptop/{id}")
+    @GetMapping("/laptop/{id}")
     public ResponseEntity<Laptop> findOneById(@PathVariable Long id) {
         if (laptopRepository.count() > 0) {
             Optional<Laptop> laptopOpt = laptopRepository.findById(id);
@@ -50,19 +52,14 @@ public class LaptopController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/api/laptop")
+    @PostMapping("/laptop")
     public ResponseEntity<Laptop> create(@RequestBody Laptop laptop) {
         if (laptop.getId() != null) return ResponseEntity.badRequest().build();
 
-        try {
-            laptopRepository.save(laptop);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(laptopRepository.save(laptop));
     }
 
-    @PutMapping("/api/laptop")
+    @PutMapping("/laptop")
     public ResponseEntity<Laptop> update(@RequestBody Laptop laptop) {
         if (laptop.getId() == null) return ResponseEntity.badRequest().build();
 
@@ -74,7 +71,7 @@ public class LaptopController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/api/laptop/{id}")
+    @DeleteMapping("/laptop/{id}")
     public ResponseEntity<Laptop> delete(@PathVariable Long id) {
         if (laptopRepository.existsById(id)) {
             laptopRepository.deleteById(id);
@@ -84,7 +81,7 @@ public class LaptopController {
         return ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping("/api/laptop")
+    @DeleteMapping("/laptop")
     public ResponseEntity<Laptop> deleteAll() {
         if (laptopRepository.count() > 0) {
             laptopRepository.deleteAll();

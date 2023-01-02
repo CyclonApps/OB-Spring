@@ -19,10 +19,10 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiDetails())
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.example.obejHelloLaptop"))
                 .paths(PathSelectors.any())
                 .build();
-    }
+    }//.apis(RequestHandlerSelectors.any())
 
     private ApiInfo apiDetails() {
         return new ApiInfo("Spring Boot Laptop API REST",
