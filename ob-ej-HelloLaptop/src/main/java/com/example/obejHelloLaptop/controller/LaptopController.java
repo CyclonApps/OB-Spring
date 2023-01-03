@@ -17,20 +17,10 @@ import java.util.Optional;
 public class LaptopController {
 
     public LaptopRepository laptopRepository;
+
     public LaptopController(LaptopRepository laptopRepository) {
         this.laptopRepository = laptopRepository;
     }
-
-    // Method to get all laptops
-    /* @GetMapping("/api/laptops")
-    public List<Laptop> getLaptops() {
-        return laptopRepository.findAll();
-    }
-
-    @PostMapping("api/laptops")
-    public Laptop create(@RequestBody Laptop laptop) {
-        return laptopRepository.save(laptop);
-    } */
 
     @GetMapping("/laptop")
     public List<Laptop> findAll() {
@@ -67,15 +57,14 @@ public class LaptopController {
             return ResponseEntity.badRequest().build();
         }
 
-        Laptop result = laptopRepository.save(laptop);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok( laptopRepository.save(laptop));
     }
 
     @DeleteMapping("/laptop/{id}")
     public ResponseEntity<Laptop> delete(@PathVariable Long id) {
         if (laptopRepository.existsById(id)) {
             laptopRepository.deleteById(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.badRequest().build();
@@ -85,7 +74,7 @@ public class LaptopController {
     public ResponseEntity<Laptop> deleteAll() {
         if (laptopRepository.count() > 0) {
             laptopRepository.deleteAll();
-            ResponseEntity.ok().build();
+            ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.badRequest().build();
