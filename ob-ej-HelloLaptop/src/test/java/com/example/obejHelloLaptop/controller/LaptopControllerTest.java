@@ -85,8 +85,6 @@ class LaptopControllerTest {
 
     @Test
     void update() {
-        laptopRepository.save(new Laptop(null, "Acer", "Nitro", "Test Description", LocalDate.now()));
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -107,8 +105,8 @@ class LaptopControllerTest {
 
         Laptop result = response.getBody();
 
-        assertEquals(1L, result.getId());
-        assertEquals("Test Description Updated", result.getDescription());
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("Test Description Updated", response.getBody().getDescription());
     }
 
     @Test
