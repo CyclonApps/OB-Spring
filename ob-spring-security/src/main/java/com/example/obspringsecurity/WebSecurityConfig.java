@@ -1,29 +1,17 @@
 package com.example.obspringsecurity;
 
-import org.apache.catalina.security.SecurityConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Iterator;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
 @EnableWebSecurity
@@ -31,14 +19,15 @@ public class WebSecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
+
         UserDetails user1 = User.withDefaultPasswordEncoder()
                 .username("user")
-                .password("password")
+                .password(passwordEncoder().encode("password"))
                 .roles("USER")
                 .build();
         UserDetails user2 = User.withDefaultPasswordEncoder()
                 .username("admin")
-                .password("password")
+                .password(passwordEncoder().encode("password"))
                 .roles("USER", "ADMIN")
                 .build();
 
@@ -46,9 +35,15 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
                 .requestMatchers("/hola").permitAll()
+                .requestMatchers("/hola").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .and().httpBasic();
@@ -56,5 +51,12 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-
+    @Bean
+    public HttpFirewall looseHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowBackSlash(true);
+        firewall.setAllowSemicolon(true);
+        firewall.setAllowUrlEncodedSlash(true);
+        return firewall;
+    }
 }
