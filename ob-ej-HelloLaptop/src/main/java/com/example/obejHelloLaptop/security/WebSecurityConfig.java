@@ -39,6 +39,11 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests()
+                .requestMatchers("/").permitAll()
+                .and().formLogin()
+                .and().httpBasic();
 
+        return http.build();
     }
 }
