@@ -1,5 +1,6 @@
-package com.example.obspringsecurity;
+package com.example.obejHelloLaptop.security;
 
+import ch.qos.logback.core.encoder.Encoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,16 +11,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
+
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
-
         UserDetails user1 = User.withDefaultPasswordEncoder()
                 .username("user")
                 .password(passwordEncoder().encode("password"))
@@ -30,45 +28,22 @@ public class WebSecurityConfig {
                 .password(passwordEncoder().encode("password"))
                 .roles("USER", "ADMIN")
                 .build();
-        UserDetails dev = User.withDefaultPasswordEncoder()
-                .username("dev")
-                .password(passwordEncoder().encode("dev"))
-                .roles("USER", "USER")
-                .accountLocked(false)
-                .build();
-        UserDetails test = User.withDefaultPasswordEncoder()
-                .username("test")
-                .password(passwordEncoder().encode("test"))
-                .roles("USER", "ADMIN")
-                .accountLocked(false)
-                .build();
 
-        return new InMemoryUserDetailsManager(user1, user2, dev, test);
+        return new InMemoryUserDetailsManager(user1, user2);
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    private PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
-                .requestMatchers("/hola").permitAll()
-                .requestMatchers("/hola").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .requestMatchers("/").permitAll()
                 .and().formLogin()
                 .and().httpBasic();
 
         return http.build();
-    }
-
-    @Bean
-    public HttpFirewall looseHttpFirewall() {
-        StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowBackSlash(true);
-        firewall.setAllowSemicolon(true);
-        firewall.setAllowUrlEncodedSlash(true);
-        return firewall;
     }
 }
