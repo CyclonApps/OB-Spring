@@ -15,7 +15,7 @@ public class EncryptionTest {
      */
     @Test
     void bCryptTest() {
-        BCryptPasswordEncoder
+        // BCryptPasswordEncoder
     }
 
 }
